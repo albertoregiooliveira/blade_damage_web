@@ -1,6 +1,6 @@
 from flask import render_template
 
-from src.core.upload import upload_file
+from module_web.web_app.src.core.upload import upload_file
 
 def setup_routes(app):
 
