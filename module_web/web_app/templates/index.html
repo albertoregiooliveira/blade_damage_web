@@ -85,6 +85,10 @@
 
                 // Exibe as imagens
                 document.getElementById('images').style.display = 'flex';
+            }else {
+              // Response was not successful (e.g., 404, 500)
+              console.error('HTTP Error:', response.status, response.statusText);
+              throw new Error('Network response was not ok.');
             }
         };
     </script>
