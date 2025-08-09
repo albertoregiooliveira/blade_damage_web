@@ -31,7 +31,7 @@ class IAModel:
 
         # Determina arquivo do modelo
         if model_filename is None:
-            model_filename = '../../model/25_rand_noagr_augum_efficientnetb2_3.weights.h5'
+            model_filename = './model/25_rand_noagr_augum_efficientnetb2_3.weights.h5'
 
         # Armazena caminho do modelo
         self.model_filename = model_filename
