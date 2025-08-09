@@ -59,12 +59,18 @@
             <a id="download-link" class="btn btn-success mt-2" download="imagem_processada.png">Download</a>
         </div>
     </div>
+    <div id="loading" class="text-center my-4" style="display:none;">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Processando...</span>
+        </div>
+        <p>Processando imagem, aguarde...</p>
+    </div>
     <script>
         const form = document.getElementById('upload-form');
         form.onsubmit = async (e) => {
             e.preventDefault();
+            document.getElementById('loading').style.display = 'block';
             const data = new FormData(form);
-            alert("Botao clicado, enviando imagem...");
             const response = await fetch('/upload', { method: 'POST', body: data });
             if (response.ok) {
                 const blob = await response.blob();
@@ -83,9 +89,12 @@
                 const textPrediction = response.headers.get('text-prediction') || '-';
                 document.getElementById('text-prediction').textContent = 'Classificação: ' + textPrediction;
 
+                document.getElementById('loading').style.display = 'none';
+
                 // Exibe as imagens
                 document.getElementById('images').style.display = 'flex';
             }else {
+              document.getElementById('loading').style.display = 'none';
               // Response was not successful (e.g., 404, 500)
               console.error('HTTP Error:', response.status, response.statusText);
               throw new Error('Network response was not ok.');

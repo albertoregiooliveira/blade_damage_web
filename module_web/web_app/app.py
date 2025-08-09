@@ -1,4 +1,6 @@
 from flask import Flask
+
+from module_web.web_app.src.core.memory_util import get_memory_info
 from module_web.web_app.src.core.routes import setup_routes
 
 app = Flask(__name__)

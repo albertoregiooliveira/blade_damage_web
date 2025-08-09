@@ -1,5 +1,6 @@
 from flask import render_template
 
+from module_web.web_app.src.core.memory_util import get_memory_info
 from module_web.web_app.src.core.upload import upload_file
 
 def setup_routes(app):
