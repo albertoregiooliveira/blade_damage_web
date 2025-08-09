@@ -47,6 +47,12 @@
 
         <button class="btn btn-primary" type="submit">Processar</button>
     </form>
+        <div id="loading" class="text-center my-4" style="display:none;">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Processando...</span>
+        </div>
+        <p>Processando imagem, aguarde...</p>
+    </div>
     <div id="images" class="row mt-4" style="display:none;">
         <div class="col">
             <h5><p>Original</p></h5>
@@ -59,16 +65,11 @@
             <a id="download-link" class="btn btn-success mt-2" download="imagem_processada.png">Download</a>
         </div>
     </div>
-    <div id="loading" class="text-center my-4" style="display:none;">
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Processando...</span>
-        </div>
-        <p>Processando imagem, aguarde...</p>
-    </div>
     <script>
         const form = document.getElementById('upload-form');
         form.onsubmit = async (e) => {
             e.preventDefault();
+            document.getElementById('images').style.display = 'none';
             document.getElementById('loading').style.display = 'block';
             const data = new FormData(form);
             const response = await fetch('/upload', { method: 'POST', body: data });
