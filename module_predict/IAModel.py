@@ -97,7 +97,9 @@ class IAModel:
 
             #  Carrega o backbone pré-treinado na base ImageNet
             # backbone = tf.keras.applications.EfficientNetB2(input_shape=(self.img_dim, self.img_dim, 3), input_tensor=layers, include_top=False, weights='imagenet')
-            backbone = self.backbone(input_shape=(self.img_dim, self.img_dim, 3), input_tensor=layers, include_top=False, weights='imagenet')
+            # backbone = self.backbone(input_shape=(self.img_dim, self.img_dim, 3), input_tensor=layers, include_top=False, weights='imagenet')
+            backbone = self.backbone(input_shape=(self.img_dim, self.img_dim, 3), input_tensor=layers,
+                                     include_top=False, weights='./model/efficientnetb2_notop.h5')
             backbone.trainable = False
             layers = tf.keras.layers.GlobalAveragePooling2D()(backbone.output)  # GAP
 
