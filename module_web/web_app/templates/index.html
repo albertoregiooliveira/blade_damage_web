@@ -64,6 +64,7 @@
         form.onsubmit = async (e) => {
             e.preventDefault();
             const data = new FormData(form);
+            alert("Botao clicado, enviando imagem...");
             const response = await fetch('/upload', { method: 'POST', body: data });
             if (response.ok) {
                 const blob = await response.blob();
