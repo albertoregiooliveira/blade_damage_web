@@ -7,7 +7,6 @@ import os
 from BladeDamageConfiguration import BladeDamageConfiguration
 from module_predict.ImagePredict import ImagePredict
 
-
 def upload_file():
     print("Solicitação de upload de arquivo.")
 
@@ -15,6 +14,7 @@ def upload_file():
         return jsonify({"error": "No image uploaded"}), 400
 
     file = request.files['image']
+
 
 
     filename = file.filename
@@ -62,6 +62,7 @@ def process_image(image, form):
     ip.text_percentual = form.get('show_percentual') == 'on'
     ip.text_layout = form.get('show_all_results') == 'on'
     ip.heatmap_flag = form.get('show_heatmap') == 'on'
+    ip.threshold = 0. if form.get('show_threshold') != 'on' else float(form.get('threshold_value'))
     # ip.alpha = 1.0
 
     # Gera uma imagem

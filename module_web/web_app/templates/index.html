@@ -4,9 +4,32 @@
     <meta charset="UTF-8">
     <title>Upload e Processamento de Imagem</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+    #creditos {
+        position: fixed;
+        left: 0;
+        bottom: 1px;
+        width: 100vw;
+        background: #f8f9fa;
+        border: 2px solid #6c757d;
+        border-left: 0;
+        border-right: 0;
+        border-radius: 0;
+        padding: 5px 5px 5px 24px;
+        z-index: 1000;
+        box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
+        text-align: left;
+    }
+    #images {
+        padding: 0px 0px 100px 0px;
+    }
+    body {
+        padding-bottom: 70px; /* espaço para o rodapé */
+    }
+</style>
 </head>
 <body class="container py-5">
-    <h2>Upload de Imagem</h2>
+    <h2>Blade Damage App</h2>
     <form id="upload-form" enctype="multipart/form-data" method="post">
         <input type="file" name="image" accept="image/*" required>
 
@@ -16,6 +39,14 @@
                 Mostrar bordas da previsão
             </label>
         </div>
+        <div class="form-check my-2 d-flex align-items-center">
+            <input class="form-check-input" type="checkbox" id="show-threshold" name="show_threshold">
+            <label class="form-check-label" for="show-threshold"  style="padding-left: 8px">
+                Mostrar somente bordas da previsão com valores acima de:
+                <input type="number" class="form-control d-inline-block" style="width: 100px;" id="threshold-value" name="threshold_value" min="0" max="1" step="0.1" value="0.7" required>
+            </label>
+        </div>
+
 
         <div class="form-check my-2">
             <input class="form-check-input" type="checkbox" id="show-heatmap" name="show_heatmap" checked>
@@ -47,7 +78,7 @@
 
         <button class="btn btn-primary" type="submit">Processar</button>
     </form>
-        <div id="loading" class="text-center my-4" style="display:none;">
+    <div id="loading" class="text-center my-4" style="display:none;">
         <div class="spinner-border text-primary" role="status">
             <span class="visually-hidden">Processando...</span>
         </div>
@@ -61,10 +92,22 @@
         <div class="col">
             <h5><p id="text-prediction"></p></h5>
             <img id="processed-img" class="img-fluid" />
-
+            <p id="processing-time" class="text-muted"></p>
             <a id="download-link" class="btn btn-success mt-2" download="imagem_processada.png">Download</a>
         </div>
     </div>
+
+    <div id="creditos">
+        <h6>Crédito</h6>
+        <p>
+            Este trabalho foi baseado na dissertação de mestrado <b>"Método para identificação de danos em pás de aerogeradores com
+            refinamento de redes neurais convolucionais"</b> de <b><span style="color: blue;">Alberto Régio A. de Oliveira</span></b> disponível
+            <a href="https://drive.google.com/file/d/1bkVoQMmve2IESVbMG_dm5aFv8zztJpc8/view?usp=drive_link" target="_blank">aqui</a>
+            e no artigo publicado
+            <a href="https://drive.google.com/file/d/12tA9oIHy2125ELM2nexDXFXbc5Mbg3_w/view?usp=drive_link" target="_blank">aqui</a>.
+        </p>
+    </div>
+
     <script>
         const form = document.getElementById('upload-form');
         form.onsubmit = async (e) => {
@@ -72,7 +115,10 @@
             document.getElementById('images').style.display = 'none';
             document.getElementById('loading').style.display = 'block';
             const data = new FormData(form);
+            const startTime = performance.now();
             const response = await fetch('/upload', { method: 'POST', body: data });
+            const endTime = performance.now();
+            const duration = ((endTime - startTime) / 1000).toFixed(2);
             if (response.ok) {
                 const blob = await response.blob();
                 const url = URL.createObjectURL(blob);
@@ -89,6 +135,9 @@
                 // Pega texto da predição
                 const textPrediction = response.headers.get('text-prediction') || '-';
                 document.getElementById('text-prediction').textContent = 'Classificação: ' + textPrediction;
+
+                // Exibe o tempo de processamento
+                document.getElementById('processing-time').textContent = `Tempo de processamento: ${duration} segundos`;
 
                 document.getElementById('loading').style.display = 'none';
 

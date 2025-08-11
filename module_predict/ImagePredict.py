@@ -32,6 +32,7 @@ class ImagePredict(ImageInterface):
         self.heatmap_flag = False
         # self.alpha = 0.4
         self.alpha = 1.0
+        self.threshold = 0.
 
         self.predict_flag = True
         self.text_predict_flag = True
@@ -68,10 +69,10 @@ class ImagePredict(ImageInterface):
                 image, _ = self._show_heatmap(image)
 
             if self.predict_flag:
-                image, _ = self._show_grid_prediction(image)
+                image, _ = self._show_grid_prediction(image, threshold=self.threshold)
 
             if self.text_predict_flag:
-                image, _ = self._show_text_prediction(image)
+                image, _ = self._show_text_prediction(image, threshold=self.threshold)
 
             if self.text_predict_flag:
                 image = self._show_voting_prediction(image)
@@ -85,7 +86,7 @@ class ImagePredict(ImageInterface):
 
 
     # Mostra a grid do recorte com a borda na cor da previsao
-    def _show_grid_prediction(self, image, image_crop_list=None):
+    def _show_grid_prediction(self, image, image_crop_list=None, threshold=0.):
 
         # TEMP
         if image_crop_list is None:
@@ -109,6 +110,7 @@ class ImagePredict(ImageInterface):
                 image_crop_individual = image_crop_list[i]
 
             if i < len(crops_title_list) and crops_title_list[i] is not None:
+
                 perc = 0
                 color_grid = self.COLOR_GRAY
                 exibe = True
@@ -124,13 +126,14 @@ class ImagePredict(ImageInterface):
 
                 # Destaca borda da classe com a cor da classe vencedora
                 if exibe:
-                    p11 = (2, 2)
-                    p21 = (image_crop.shape[0] - 2, image_crop.shape[1] - 2)
-                    cv2.rectangle(image_crop, p11, p21, color_grid, 2)
+                    if perc >= threshold:
+                        p11 = (2, 2)
+                        p21 = (image_crop.shape[0] - 2, image_crop.shape[1] - 2)
+                        cv2.rectangle(image_crop, p11, p21, color_grid, 2)
 
-                    # TEMP
-                    if image_crop_individual is not None:
-                        cv2.rectangle(image_crop_individual, p11, p21, color_grid, 2)
+                        # TEMP
+                        if image_crop_individual is not None:
+                            cv2.rectangle(image_crop_individual, p11, p21, color_grid, 2)
 
             # Aplica imagem do recorte na imagem principal
             image[p1[1]:p2[1], p1[0]:p2[0], :] = image_crop
@@ -143,7 +146,7 @@ class ImagePredict(ImageInterface):
 
 
     # Mostra rotulos dos recortes nas grids na imagem
-    def _show_text_prediction(self, image, image_crop_list=None):
+    def _show_text_prediction(self, image, image_crop_list=None, threshold=0.):
 
         # TEMP
         if image_crop_list is None:
@@ -168,10 +171,20 @@ class ImagePredict(ImageInterface):
 
             if i < len(crops_title_list) and crops_title_list[i] is not None:
 
-                if self.text_layout == 0:
-                    self._show_text_layout_01(image_crop, crops_title_list[i], image_crop_individual)
-                else:
-                    self._show_text_layout_02(image_crop, crops_title_list[i], image_crop_individual)
+
+                # Seleciona a previsao da classe vencedora
+                perc = 0
+                for j, text in enumerate(reversed(crops_title_list[i])):
+                    percentual = round(text[1],4)
+                    if percentual > perc:
+                        perc = percentual
+
+                if perc >= threshold:
+
+                    if self.text_layout == 0:
+                        self._show_text_layout_01(image_crop, crops_title_list[i], image_crop_individual)
+                    else:
+                        self._show_text_layout_02(image_crop, crops_title_list[i], image_crop_individual)
 
             # Aplica imagem do recorte na imagem principal
             image[p1[1]:p2[1], p1[0]:p2[0], :] = image_crop
